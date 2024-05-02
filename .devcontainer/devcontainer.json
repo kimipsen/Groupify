@@ -28,7 +28,8 @@
 				"EditorConfig.EditorConfig",
 				"ms-dotnettools.vscodeintellicode-csharp",
 				"PKief.material-icon-theme",
-				"SonarSource.sonarlint-vscode"
+				"SonarSource.sonarlint-vscode",
+				"github.vscode-github-actions"
 			]
 		}
 	},
