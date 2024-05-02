@@ -1,7 +1,8 @@
-using System;
 using System.ComponentModel;
-using System.Linq;
+
 using Nuke.Common.Tooling;
+
+namespace Groupify.Build;
 
 [TypeConverter(typeof(TypeConverter<Configuration>))]
 public class Configuration : Enumeration

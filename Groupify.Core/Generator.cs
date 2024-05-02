@@ -123,7 +123,7 @@ public class Generator(GroupSettings settings, List<Person> people, List<Relatio
         return CalculateGroupScore(copy);
     }
 
-    private void SwapMembers(Group group1, Person person1, Group group2, Person person2)
+    private static void SwapMembers(Group group1, Person person1, Group group2, Person person2)
     {
         group1.People.Remove(person1);
         group1.People.Add(person2);
@@ -159,7 +159,7 @@ public class Generator(GroupSettings settings, List<Person> people, List<Relatio
         return minIndex;
     }
 
-    private List<Person> CopyList(List<Person> list)
+    private static List<Person> CopyList(List<Person> list)
     {
         List<Person> result = new(list.Count);
         foreach (Person person in list)
