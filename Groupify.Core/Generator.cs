@@ -1,6 +1,7 @@
 ﻿namespace Groupify.Core;
 public class Generator(GroupSettings settings, List<Person> people, List<Relationship> relationships)
 {
+    public List<Group> Groups => groups;
     private readonly List<Group> groups = [];
 
     public void GenerateGroups()
