@@ -1,0 +1,29 @@
+version: '3'
+
+silent: true
+
+includes:
+  # npm:
+  #   taskfile: ./Frontend/Taskfile.yml
+  #   dir: ./Frontend
+
+  # nuke:
+  #   taskfile: ./build/Taskfile.yml
+
+tasks:
+  default:
+    cmds:
+      - task --list-all
+
+  # build:
+  #   cmds:
+  #     - dotnet build
+
+  # clean:
+  #   cmds:
+  #     - dotnet clean
+  #     - rm -rf .tests
+  #     - rm -rf .coverage
+  #     - rm -rf dist
+  #     - rm -rf .sonarqube
+  #     - rm -rf .nuke/temp

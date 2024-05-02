@@ -1,0 +1,38 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/dotnet
+{
+	"name": "C# (.NET)",
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	"image": "mcr.microsoft.com/devcontainers/dotnet:1-8.0-bookworm",
+	"features": {
+		"ghcr.io/devcontainers/features/node:1": {},
+		"ghcr.io/eitsupi/devcontainer-features/go-task:1": {},
+        "ghcr.io/devcontainers/features/github-cli:1": {}
+	},
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	"postCreateCommand": {
+        "tools": "dotnet restore",
+        "avalonia-templates": "dotnet new install Avalonia.Templates"
+    },
+    
+    // Configure tool-specific properties.
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-dotnettools.vscode-dotnet-runtime",
+				"AvaloniaTeam.vscode-avalonia",
+				"ms-dotnettools.csharp",
+				"ms-dotnettools.csdevkit",
+				"irishbruse.csharp-utilities",
+				"EditorConfig.EditorConfig",
+				"ms-dotnettools.vscodeintellicode-csharp",
+				"PKief.material-icon-theme",
+				"SonarSource.sonarlint-vscode"
+			]
+		}
+	},
+
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	"remoteUser": "root"
+}
