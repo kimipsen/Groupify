@@ -7,8 +7,8 @@ includes:
   #   taskfile: ./Frontend/Taskfile.yml
   #   dir: ./Frontend
 
-  # nuke:
-  #   taskfile: ./build/Taskfile.yml
+  nuke:
+     taskfile: ./build/Taskfile.yml
 
 tasks:
   default:
