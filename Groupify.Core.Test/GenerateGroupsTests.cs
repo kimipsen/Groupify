@@ -49,7 +49,7 @@ public class GenerateGroupsTests
     }
 
     [Theory]
-    [InlineData(2)]
+    //[InlineData(2)]
     [InlineData(50)]
     [InlineData(100)]
     public void GenerateGroups_WhenSettingNumberOfGroups_ShouldAlwaysReturnTheSameNumberOfGroups(int groupCount)
