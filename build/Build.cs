@@ -1,16 +1,11 @@
 using Nuke.Common;
-using Nuke.Common.CI.GitHubActions;
+using Nuke.Common.Git;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Tools.DotNet;
 
 namespace Groupify.Build;
 
-[GitHubActions(
-    "continuous",
-    GitHubActionsImage.UbuntuLatest,
-    On = [GitHubActionsTrigger.Push],
-    InvokedTargets = [nameof(Prep)])]
-class Build : NukeBuild
+partial class Build : NukeBuild
 {
     /// Support plugins are available for:
     ///   - JetBrains ReSharper        https://nuke.build/resharper
@@ -23,8 +18,7 @@ class Build : NukeBuild
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
     readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
-    GitHubActions GitHubActions => GitHubActions.Instance;
-
+    [GitRepository] readonly GitRepository Repository;
     [Solution(GenerateProjects = true)] readonly Solution Solution;
 
     Target Restore => _ => _
@@ -39,23 +33,19 @@ class Build : NukeBuild
         .Executes(() =>
         {
             // compile actual code
-        });
-
-    Target Prep => _ => _
-        .DependsOn(Compile, Test)
-        .Executes(() =>
-        {
+            DotNetTasks.DotNetBuild();
         });
 
     Target Release => _ => _
-        .DependsOn(Codeanalysis, MutationTests, Prep)
+        .DependsOn(Codeanalysis, MutationTests)
+        .Requires(() => Repository.IsOnMainOrMasterBranch())
         .Executes(() =>
         {
             // do some github magic to release project
         });
 
     Target MutationTests => _ => _
-        .DependsOn(Compile)
+        .DependsOn(Compile, Test)
         .Executes(() =>
         {
             DotNetTasks.DotNetToolRestore();

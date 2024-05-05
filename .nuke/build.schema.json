@@ -75,7 +75,6 @@
               "Codeanalysis",
               "Compile",
               "MutationTests",
-              "Prep",
               "Release",
               "Restore",
               "Test"
@@ -95,7 +94,6 @@
               "Codeanalysis",
               "Compile",
               "MutationTests",
-              "Prep",
               "Release",
               "Restore",
               "Test"

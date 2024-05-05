@@ -31,5 +31,5 @@ jobs:
             .nuke/temp
             ~/.nuget/packages
           key: ${{ runner.os }}-${{ hashFiles('**/global.json', '**/*.csproj', '**/Directory.Packages.props') }}
-      - name: 'Run: Prep'
-        run: ./build.cmd Prep
+      - name: 'Run: Release'
+        run: ./build.cmd Release
