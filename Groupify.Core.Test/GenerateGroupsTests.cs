@@ -10,7 +10,6 @@ public class GenerateGroupsTests
         GroupSettings settings = new()
         {
             GroupSize = 3,
-            NumberOfGroups = 3,
             UseGroupSize = true,
         };
         List<Person> people = Fakers.People.Generate(10);
@@ -37,7 +36,6 @@ public class GenerateGroupsTests
     {
         GroupSettings settings = new()
         {
-            GroupSize = 2,
             NumberOfGroups = -1,
             UseGroupSize = false,
         };
@@ -58,7 +56,6 @@ public class GenerateGroupsTests
     {
         GroupSettings settings = new()
         {
-            GroupSize = 2,
             NumberOfGroups = groupCount,
             UseGroupSize = false,
         };
@@ -71,19 +68,60 @@ public class GenerateGroupsTests
         systemUnderTest.Groups.Should().HaveCount(groupCount);
     }
 
+    [Theory]
+    [InlineData(2)]
+    [InlineData(25)]
+    [InlineData(50)]
+    public void GenerateGroups_WhenSettingNumberOfGroups_ShouldAlwaysBalanceAmountOfPeopleInGroups(int groupCount)
+    {
+        GroupSettings settings = new()
+        {
+            NumberOfGroups = groupCount,
+            UseGroupSize = false,
+        };
+
+        List<Person> people = Fakers.People.Generate(groupCount * 4);
+        List<Relationship> relationships = [];
+        Generator systemUnderTest = new(settings, people, relationships);
+        systemUnderTest.GenerateGroups();
+
+        systemUnderTest.Groups.Should().AllSatisfy(g => g.People.Should().HaveCount(4));
+    }
+
     [Fact]
     public void GenerateGroups_WhenPeopleDoesNotWantToBeMatched()
     {
         GroupSettings settings = new()
         {
             GroupSize = 2,
-            NumberOfGroups = 4,
             UseGroupSize = true,
         };
         List<Person> people = Fakers.People.Generate(4);
         List<Relationship> relationships = [
             new(people[0], people[2], RelationshipType.DoNotMatch),
             new(people[0], people[3], RelationshipType.DoNotMatch),
+        ];
+        Generator systemUnderTest = new(settings, people, relationships);
+
+        systemUnderTest.GenerateGroups();
+
+        systemUnderTest.Groups.Should().HaveCount(2);
+        systemUnderTest.Groups.Single(g => g.People.Contains(people[0])).People.Should().Contain(people[1]);
+    }
+
+    [Fact]
+    public void GenerateGroups_WhenPeopleWantsToBeMatched()
+    {
+        GroupSettings settings = new()
+        {
+            GroupSize = 2,
+            UseGroupSize = true,
+        };
+        List<Person> people = Fakers.People.Generate(4);
+        List<Relationship> relationships = [
+            new(people[0], people[1], RelationshipType.Match),
+            new(people[1], people[0], RelationshipType.Match),
+            new(people[2], people[1], RelationshipType.Match),
         ];
         Generator systemUnderTest = new(settings, people, relationships);
 

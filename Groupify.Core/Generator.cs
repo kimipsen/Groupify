@@ -1,4 +1,5 @@
 ﻿namespace Groupify.Core;
+
 public class Generator(GroupSettings settings, List<Person> people, List<Relationship> relationships)
 {
     public List<Group> Groups => groups;
@@ -72,8 +73,9 @@ public class Generator(GroupSettings settings, List<Person> people, List<Relatio
 
     private void ShouldOptimize(Group group)
     {
-        foreach (Person person in group.People)
+        for (int person1Index = group.People.Count - 1; person1Index >= 0; person1Index--)
         {
+            var person1 = group.People[person1Index];
             int currentScore = CalculateGroupScore(group);
 
             foreach (Group group2 in groups)
@@ -81,14 +83,15 @@ public class Generator(GroupSettings settings, List<Person> people, List<Relatio
                 if (group.Id == group2.Id)
                     continue;
 
-                foreach (Person person2 in group2.People)
+                for (int person2Index = group2.People.Count - 1; person2Index >= 0; person2Index--)
                 {
+                    var person2 = group2.People[person2Index];
                     int group2CurrentScore = CalculateGroupScore(group2);
-                    int updatedScore = CalculateGroupScoreIfReplaced(group, person, person2) + CalculateGroupScoreIfReplaced(group2, person2, person);
+                    int updatedScore = CalculateGroupScoreIfReplaced(group, person1, person2) + CalculateGroupScoreIfReplaced(group2, person2, person1);
 
                     if (updatedScore < currentScore + group2CurrentScore)
                     {
-                        SwapMembers(group, person, group2, person2);
+                        SwapMembers(group, person1, group2, person2);
                     }
                 }
             }
@@ -106,7 +109,7 @@ public class Generator(GroupSettings settings, List<Person> people, List<Relatio
                     score += (int)RelationshipType.Match;
 
                 if (ContainsRelationship(member1, member2, RelationshipType.DoNotMatch))
-                    score += (int)RelationshipType.Match;
+                    score += (int)RelationshipType.DoNotMatch;
             }
         }
 
@@ -115,11 +118,11 @@ public class Generator(GroupSettings settings, List<Person> people, List<Relatio
 
     private bool ContainsRelationship(Person p1, Person p2, RelationshipType relationshipType) => relationships.Exists(r => r.Person1.Id == p1.Id && r.Person2.Id == p2.Id && r.RelationshipType == relationshipType);
 
-    private int CalculateGroupScoreIfReplaced(Group group, Person person1, Person person2)
+    private int CalculateGroupScoreIfReplaced(Group group, Person personA, Person personB)
     {
         Group copy = group.Copy();
-        copy.People.Remove(person1);
-        copy.People.Add(person2);
+        copy.People.Remove(personA);
+        copy.People.Add(personB);
         return CalculateGroupScore(copy);
     }
 
