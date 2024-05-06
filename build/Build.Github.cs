@@ -18,7 +18,7 @@ namespace Groupify.Build;
 public partial class Build
 {
     GitHubActions GitHubActions => GitHubActions.Instance;
-    [OctoVersion] readonly OctoVersionInfo OctoVersion;
+    [OctoVersion] readonly OctoVersionInfo OctoVersionInfo;
 
     Target Release => _ => _
         .Requires(() => Repository.IsOnMainOrMasterBranch())
