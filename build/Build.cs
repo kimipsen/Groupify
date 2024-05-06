@@ -2,6 +2,7 @@ using Nuke.Common;
 using Nuke.Common.Git;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Tools.DotNet;
+using Nuke.Common.Tools.SonarScanner;
 
 namespace Groupify.Build;
 
@@ -21,6 +22,8 @@ partial class Build : NukeBuild
     [GitRepository] readonly GitRepository Repository;
     [Solution(GenerateProjects = true)] readonly Solution Solution;
 
+    [Secret, Parameter] readonly string SonarCloudtoken;
+
     Target Restore => _ => _
         .Executes(() =>
         {
@@ -34,14 +37,6 @@ partial class Build : NukeBuild
         {
             // compile actual code
             DotNetTasks.DotNetBuild();
-        });
-
-    Target Release => _ => _
-        .DependsOn(Codeanalysis, MutationTests)
-        .Requires(() => Repository.IsOnMainOrMasterBranch())
-        .Executes(() =>
-        {
-            // do some github magic to release project
         });
 
     Target MutationTests => _ => _
@@ -58,6 +53,8 @@ partial class Build : NukeBuild
         .Executes(() =>
         {
             // run sonarcloud
+            SonarScannerTasks.SonarScannerBegin();
+            SonarScannerTasks.SonarScannerEnd();
         });
 
     Target Test => _ => _

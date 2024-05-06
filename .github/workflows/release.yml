@@ -9,14 +9,14 @@
 #
 #     - To trigger manual generation invoke:
 #
-#         nuke --generate-configuration GitHubActions_continuous --host GitHubActions
+#         nuke --generate-configuration GitHubActions_release --host GitHubActions
 #
 # </auto-generated>
 # ------------------------------------------------------------------------------
 
-name: continuous
+name: release
 
-on: [push]
+on: [pull_request]
 
 jobs:
   ubuntu-latest:
@@ -33,5 +33,3 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('**/global.json', '**/*.csproj', '**/Directory.Packages.props') }}
       - name: 'Run: Release'
         run: ./build.cmd Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
