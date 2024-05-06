@@ -2,7 +2,6 @@ using Nuke.Common;
 using Nuke.Common.Git;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Tools.DotNet;
-using Nuke.Common.Tools.SonarScanner;
 
 namespace Groupify.Build;
 
@@ -21,8 +20,6 @@ partial class Build : NukeBuild
 
     [GitRepository] readonly GitRepository Repository;
     [Solution(GenerateProjects = true)] readonly Solution Solution;
-
-    [Secret, Parameter] readonly string SonarCloudtoken;
 
     Target Restore => _ => _
         .Executes(() =>
@@ -46,15 +43,6 @@ partial class Build : NukeBuild
             DotNetTasks.DotNetToolRestore();
             // run stryker tool
             DotNetTasks.DotNet("stryker");
-        });
-
-    Target Codeanalysis => _ => _
-        .DependsOn(Compile)
-        .Executes(() =>
-        {
-            // run sonarcloud
-            SonarScannerTasks.SonarScannerBegin();
-            SonarScannerTasks.SonarScannerEnd();
         });
 
     Target Test => _ => _

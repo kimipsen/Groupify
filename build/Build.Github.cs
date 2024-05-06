@@ -22,7 +22,7 @@ public partial class Build
 
     Target Release => _ => _
         .Requires(() => Repository.IsOnMainOrMasterBranch())
-        .DependsOn(Codeanalysis, MutationTests)
+        .DependsOn(Test, MutationTests)
         .Executes(() =>
         {
             var credentials = new Credentials(GitHubActions.Token);
