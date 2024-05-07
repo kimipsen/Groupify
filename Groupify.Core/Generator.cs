@@ -1,6 +1,6 @@
 ﻿namespace Groupify.Core;
 
-public class Generator(GroupSettings settings, List<Person> people, List<Relationship> relationships)
+public class Generator(GroupSettings settings, List<IPerson> people, List<Relationship> relationships)
 {
     public List<Group> Groups => groups;
     private readonly List<Group> groups = [];
@@ -11,7 +11,7 @@ public class Generator(GroupSettings settings, List<Person> people, List<Relatio
 
         GenerateEmptyGroups();
 
-        List<Person> clone = CopyList(people);
+        List<IPerson> clone = CopyList(people);
 
         // Add a single person to each group
         foreach (Group group in groups)
@@ -101,9 +101,9 @@ public class Generator(GroupSettings settings, List<Person> people, List<Relatio
     private int CalculateGroupScore(Group group)
     {
         int score = group.MaxSize * group.MaxSize;
-        foreach (Person member1 in group.People)
+        foreach (IPerson member1 in group.People)
         {
-            foreach (Person member2 in group.People.Where(p => p.Id != member1.Id))
+            foreach (IPerson member2 in group.People.Where(p => p.Id != member1.Id))
             {
                 if (ContainsRelationship(member1, member2, RelationshipType.Match))
                     score += (int)RelationshipType.Match;
@@ -116,9 +116,9 @@ public class Generator(GroupSettings settings, List<Person> people, List<Relatio
         return score;
     }
 
-    private bool ContainsRelationship(Person p1, Person p2, RelationshipType relationshipType) => relationships.Exists(r => r.Person1.Id == p1.Id && r.Person2.Id == p2.Id && r.RelationshipType == relationshipType);
+    private bool ContainsRelationship(IPerson p1, IPerson p2, RelationshipType relationshipType) => relationships.Exists(r => r.Person1.Id == p1.Id && r.Person2.Id == p2.Id && r.RelationshipType == relationshipType);
 
-    private int CalculateGroupScoreIfReplaced(Group group, Person personA, Person personB)
+    private int CalculateGroupScoreIfReplaced(Group group, IPerson personA, IPerson personB)
     {
         Group copy = group.Copy();
         copy.People.Remove(personA);
@@ -126,7 +126,7 @@ public class Generator(GroupSettings settings, List<Person> people, List<Relatio
         return CalculateGroupScore(copy);
     }
 
-    private static void SwapMembers(Group group1, Person person1, Group group2, Person person2)
+    private static void SwapMembers(Group group1, IPerson person1, Group group2, IPerson person2)
     {
         group1.People.Remove(person1);
         group1.People.Add(person2);
@@ -134,16 +134,16 @@ public class Generator(GroupSettings settings, List<Person> people, List<Relatio
         group2.People.Add(person1);
     }
 
-    private int GetIndexOfBestMatch(Group group, List<Person> people)
+    private int GetIndexOfBestMatch(Group group, List<IPerson> people)
     {
         int[] points = new int[people.Count];
 
         for (int i = 0; i < people.Count; i++)
         {
-            Person p = people[i];
+            IPerson p = people[i];
             points[i] = group.MaxSize;
 
-            foreach (Person person in group.People)
+            foreach (IPerson person in group.People)
             {
                 if (ContainsRelationship(p, person, RelationshipType.Match))
                     points[i] += (int)RelationshipType.Match;
@@ -162,13 +162,9 @@ public class Generator(GroupSettings settings, List<Person> people, List<Relatio
         return minIndex;
     }
 
-    private static List<Person> CopyList(List<Person> list)
+    private static List<IPerson> CopyList(List<IPerson> list)
     {
-        List<Person> result = new(list.Count);
-        foreach (Person person in list)
-        {
-            result.Add(new(person.Id, person.FirstName, person.LastName));
-        }
+        List<IPerson> result = [.. list];
         return result;
     }
 }

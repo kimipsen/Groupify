@@ -1,2 +1,2 @@
 ﻿namespace Groupify.Core;
-public record class Relationship(Person Person1, Person Person2, RelationshipType RelationshipType);
+public record class Relationship(IPerson Person1, IPerson Person2, RelationshipType RelationshipType);

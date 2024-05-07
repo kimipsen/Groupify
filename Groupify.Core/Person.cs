@@ -1,3 +1,8 @@
 ﻿namespace Groupify.Core;
 
-public record class Person(int Id, string FirstName, string LastName);
+public interface IPerson
+{
+    int Id { get; }
+    string FirstName { get; }
+    string LastName { get; }
+}

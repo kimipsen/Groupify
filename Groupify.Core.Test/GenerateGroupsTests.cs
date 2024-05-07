@@ -12,7 +12,7 @@ public class GenerateGroupsTests
             GroupSize = 3,
             UseGroupSize = true,
         };
-        List<Person> people = Fakers.People.Generate(10);
+        List<IPerson> people = Fakers.People.Generate(10);
         List<Relationship> relations = [
             // group 1+2+3
             new(people[0], people[1], RelationshipType.Match),
@@ -40,7 +40,7 @@ public class GenerateGroupsTests
             UseGroupSize = false,
         };
 
-        List<Person> people = Fakers.People.Generate(1);
+        List<IPerson> people = Fakers.People.Generate(1);
         List<Relationship> relationships = [];
         Generator systemUnderTest = new(settings, people, relationships);
         systemUnderTest.GenerateGroups();
@@ -60,7 +60,7 @@ public class GenerateGroupsTests
             UseGroupSize = false,
         };
 
-        List<Person> people = Fakers.People.Generate(250);
+        List<IPerson> people = Fakers.People.Generate(250);
         List<Relationship> relationships = [];
         Generator systemUnderTest = new(settings, people, relationships);
         systemUnderTest.GenerateGroups();
@@ -80,7 +80,7 @@ public class GenerateGroupsTests
             UseGroupSize = false,
         };
 
-        List<Person> people = Fakers.People.Generate(groupCount * 4);
+        List<IPerson> people = Fakers.People.Generate(groupCount * 4);
         List<Relationship> relationships = [];
         Generator systemUnderTest = new(settings, people, relationships);
         systemUnderTest.GenerateGroups();
@@ -96,7 +96,7 @@ public class GenerateGroupsTests
             GroupSize = 2,
             UseGroupSize = true,
         };
-        List<Person> people = Fakers.People.Generate(4);
+        List<IPerson> people = Fakers.People.Generate(4);
         List<Relationship> relationships = [
             new(people[0], people[2], RelationshipType.DoNotMatch),
             new(people[0], people[3], RelationshipType.DoNotMatch),
@@ -117,7 +117,7 @@ public class GenerateGroupsTests
             GroupSize = 2,
             UseGroupSize = true,
         };
-        List<Person> people = Fakers.People.Generate(4);
+        List<IPerson> people = Fakers.People.Generate(4);
         List<Relationship> relationships = [
             new(people[0], people[1], RelationshipType.Match),
             new(people[1], people[0], RelationshipType.Match),

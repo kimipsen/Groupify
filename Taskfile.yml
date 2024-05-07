@@ -15,15 +15,11 @@ tasks:
     cmds:
       - task --list-all
 
-  # build:
-  #   cmds:
-  #     - dotnet build
+  net:build:
+    cmds:
+      - dotnet clean
+      - dotnet build
 
-  # clean:
-  #   cmds:
-  #     - dotnet clean
-  #     - rm -rf .tests
-  #     - rm -rf .coverage
-  #     - rm -rf dist
-  #     - rm -rf .sonarqube
-  #     - rm -rf .nuke/temp
+  net:test:
+    cmds:
+      - dotnet test

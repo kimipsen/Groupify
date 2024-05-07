@@ -2,7 +2,7 @@
 
 public record class Group(int Id, int MaxSize)
 {
-    public List<Person> People { get; init; } = [];
+    public List<IPerson> People { get; init; } = [];
     public bool IsFilled => People.Count == MaxSize;
 
     public Group Copy()
