@@ -15,7 +15,7 @@ namespace Groupify.Build;
     On = [GitHubActionsTrigger.Push],
     InvokedTargets = [nameof(Release)],
     EnableGitHubToken = true,
-    FetchDepth = 1_000)]
+    FetchDepth = 0)]
 public partial class Build
 {
     GitHubActions GitHubActions => GitHubActions.Instance;
