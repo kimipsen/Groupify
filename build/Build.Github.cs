@@ -14,7 +14,8 @@ namespace Groupify.Build;
     GitHubActionsImage.UbuntuLatest,
     On = [GitHubActionsTrigger.Push],
     InvokedTargets = [nameof(Release)],
-    EnableGitHubToken = true)]
+    EnableGitHubToken = true,
+    FetchDepth = 1_000)]
 public partial class Build
 {
     GitHubActions GitHubActions => GitHubActions.Instance;
