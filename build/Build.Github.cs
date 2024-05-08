@@ -19,7 +19,8 @@ namespace Groupify.Build;
     On = [GitHubActionsTrigger.Push],
     InvokedTargets = [nameof(PushGithub), nameof(PushNugetOrg)],
     EnableGitHubToken = true,
-    FetchDepth = 0)]
+    FetchDepth = 0,
+    ImportSecrets = [nameof(NugetApiKey)])]
 public partial class Build
 {
     GitHubActions GitHubActions => GitHubActions.Instance;

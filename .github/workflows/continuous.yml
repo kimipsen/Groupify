@@ -36,4 +36,5 @@ jobs:
       - name: 'Run: PushGithub, PushNugetOrg'
         run: ./build.cmd PushGithub PushNugetOrg
         env:
+          NugetApiKey: ${{ secrets.NUGET_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
