@@ -18,6 +18,13 @@
           "type": "boolean",
           "description": "Indicates to continue a previously failed build attempt"
         },
+        "GitHubToken": {
+          "type": "string",
+          "default": "Secrets must be entered via 'nuke :secrets [profile]'"
+        },
+        "GitHubUser": {
+          "type": "string"
+        },
         "Help": {
           "type": "boolean",
           "description": "Shows the help text for this build assembly"
@@ -47,6 +54,10 @@
           "type": "boolean",
           "description": "Disables displaying the NUKE logo"
         },
+        "NugetApiKey": {
+          "type": "string",
+          "default": "Secrets must be entered via 'nuke :secrets [profile]'"
+        },
         "Partition": {
           "type": "string",
           "description": "Partition to use on CI"
@@ -72,8 +83,14 @@
           "items": {
             "type": "string",
             "enum": [
+              "AddGithubSource",
+              "AddNugetSource",
+              "Clean",
               "Compile",
               "MutationTests",
+              "Pack",
+              "PushGithub",
+              "PushNugetOrg",
               "Release",
               "Restore",
               "Test"
@@ -90,8 +107,14 @@
           "items": {
             "type": "string",
             "enum": [
+              "AddGithubSource",
+              "AddNugetSource",
+              "Clean",
               "Compile",
               "MutationTests",
+              "Pack",
+              "PushGithub",
+              "PushNugetOrg",
               "Release",
               "Restore",
               "Test"
