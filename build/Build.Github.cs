@@ -17,7 +17,7 @@ namespace Groupify.Build;
     "continuous",
     GitHubActionsImage.UbuntuLatest,
     On = [GitHubActionsTrigger.Push],
-    InvokedTargets = [nameof(PushGithub), nameof(PushNugetOrg)],
+    InvokedTargets = [nameof(PushNugetOrg)],
     EnableGitHubToken = true,
     FetchDepth = 0,
     ImportSecrets = [nameof(NugetApiKey)])]
@@ -45,35 +45,35 @@ public partial class Build
         });
 
     // https://blog.raulnq.com/github-packages-publishing-nuget-packages-using-nuke-with-gitversion-and-github-actions#heading-create-a-github-action-workflow
-    Target AddGithubSource => _ => _
-        .Requires(() => GitHubUser)
-        .Requires(() => GitHubToken)
-        .Executes(() =>
-        {
-            try
-            {
-                DotNetTasks.DotNetNuGetAddSource(s => s
-                    .SetName("github")
-                    .SetUsername(GitHubUser)
-                    .SetPassword(GitHubToken)
-                    .EnableStorePasswordInClearText()
-                    .SetSource($"https://nuget.pkg.github.com/{GitHubUser}/index.json")
-                );
-            }
-            catch
-            {
-                Console.WriteLine("Source (github) already exists");
-            }
-        });
+    // Target AddGithubSource => _ => _
+    //     .Requires(() => GitHubUser)
+    //     .Requires(() => GitHubToken)
+    //     .Executes(() =>
+    //     {
+    //         try
+    //         {
+    //             DotNetTasks.DotNetNuGetAddSource(s => s
+    //                 .SetName("github")
+    //                 .SetUsername(GitHubUser)
+    //                 .SetPassword(GitHubToken)
+    //                 .EnableStorePasswordInClearText()
+    //                 .SetSource($"https://nuget.pkg.github.com/{GitHubUser}/index.json")
+    //             );
+    //         }
+    //         catch
+    //         {
+    //             Console.WriteLine("Source (github) already exists");
+    //         }
+    //     });
 
-    Target PushGithub => _ => _
-        .DependsOn(Pack, AddGithubSource)
-        .Executes(() =>
-        {
-            DotNetTasks.DotNetNuGetPush(s => s
-                .SetTargetPath(PackagesDirectory / "*.nupkg")
-                .SetApiKey(GitHubToken)
-                .SetSource("github")
-            );
-        });
+    // Target PushGithub => _ => _
+    //     .DependsOn(Pack, AddGithubSource)
+    //     .Executes(() =>
+    //     {
+    //         DotNetTasks.DotNetNuGetPush(s => s
+    //             .SetTargetPath(PackagesDirectory / "*.nupkg")
+    //             .SetApiKey(GitHubToken)
+    //             .SetSource("github")
+    //         );
+    //     });
 }

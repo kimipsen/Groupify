@@ -83,13 +83,11 @@
           "items": {
             "type": "string",
             "enum": [
-              "AddGithubSource",
               "AddNugetSource",
               "Clean",
               "Compile",
               "MutationTests",
               "Pack",
-              "PushGithub",
               "PushNugetOrg",
               "Release",
               "Restore",
@@ -107,13 +105,11 @@
           "items": {
             "type": "string",
             "enum": [
-              "AddGithubSource",
               "AddNugetSource",
               "Clean",
               "Compile",
               "MutationTests",
               "Pack",
-              "PushGithub",
               "PushNugetOrg",
               "Release",
               "Restore",
