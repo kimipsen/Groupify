@@ -51,9 +51,9 @@ public partial class Build
         {
             try
             {
-                NuGetTasks.NuGetSourcesAdd(s => s
+                DotNetTasks.DotNetNuGetAddSource(s => s
                     .SetName("github")
-                    .SetUserName(GitHubUser)
+                    .SetUsername(GitHubUser)
                     .SetPassword(GitHubToken)
                     .EnableStorePasswordInClearText()
                     .SetSource($"https://nuget.pkg.github.com/{GitHubUser}/index.json")

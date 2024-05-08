@@ -70,13 +70,12 @@ partial class Build : NukeBuild
         });
 
     Target AddNugetSource => _ => _
-        .Requires(() => GitHubUser)
-        .Requires(() => GitHubToken)
+        .Requires(() => NugetApiKey)
         .Executes(() =>
         {
             try
             {
-                NuGetTasks.NuGetSourcesAdd(s => s
+                DotNetTasks.DotNetNuGetAddSource(s => s
                     .SetName("nuget.org")
                     .SetSource($"https://nuget.pkg.github.com/{GitHubUser}/index.json")
                 );
