@@ -67,7 +67,7 @@ public partial class Build
         });
 
     Target PushGithub => _ => _
-        .DependsOn(Pack, Release)
+        .DependsOn(Pack, AddGithubSource)
         .Executes(() =>
         {
             DotNetTasks.DotNetNuGetPush(s => s

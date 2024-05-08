@@ -41,7 +41,9 @@ partial class Build : NukeBuild
         .Executes(() =>
         {
             // do some restores on nuget etc
-            DotNetTasks.DotNetRestore();
+            DotNetTasks.DotNetRestore(s => s
+                .SetSources("nuget", "nuget.org")
+            );
         });
 
     Target Compile => _ => _
@@ -53,7 +55,7 @@ partial class Build : NukeBuild
         });
 
     Target MutationTests => _ => _
-        .DependsOn(Compile, Test)
+        .DependsOn(Compile)
         .Executes(() =>
         {
             DotNetTasks.DotNetToolRestore();
@@ -87,23 +89,23 @@ partial class Build : NukeBuild
         });
 
     Target Pack => _ => _
-    .DependsOn(AddGithubSource, AddNugetSource)
-    .Executes(() =>
-    {
-        // push nuget package to github
-        DotNetTasks.DotNetPack(s => s
-            .SetProject(RootDirectory / "Groupify.Core")
-            .SetOutputDirectory(PackagesDirectory)
-            .SetVersion(OctoVersionInfo.FullSemVer)
-            .SetPackageId("Groupify.Core")
-            .SetAuthors(GitHubUser)
-            .SetDescription("")
-            .SetConfiguration(Configuration)
-        );
-    });
+        .DependsOn(Release)
+        .Executes(() =>
+        {
+            // push nuget package to github
+            DotNetTasks.DotNetPack(s => s
+                .SetProject(RootDirectory / "Groupify.Core")
+                .SetOutputDirectory(PackagesDirectory)
+                .SetVersion(OctoVersionInfo.FullSemVer)
+                .SetPackageId("Groupify.Core")
+                .SetAuthors(GitHubUser)
+                .SetDescription("")
+                .SetConfiguration(Configuration)
+            );
+        });
 
     Target PushNugetOrg => _ => _
-        .DependsOn(Pack, Release)
+        .DependsOn(Pack, AddNugetSource)
         .Executes(() =>
         {
             DotNetTasks.DotNetNuGetPush(s => s
