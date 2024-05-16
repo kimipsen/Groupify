@@ -1,4 +1,6 @@
-﻿using Nuke.Common;
+﻿using System;
+
+using Nuke.Common;
 using Nuke.Common.CI.GitHubActions;
 using Nuke.Common.Git;
 using Nuke.Common.Tools.GitHub;
@@ -24,7 +26,6 @@ public partial class Build
     [Nuke.Common.Parameter] readonly string GitHubUser = GitHubActions.Instance?.RepositoryOwner;
     [Nuke.Common.Parameter, Secret] readonly string GitHubToken;
 
-
     Target Release => _ => _
         .Requires(() => Repository.IsOnMainOrMasterBranch())
         .DependsOn(Test, MutationTests)
@@ -34,6 +35,15 @@ public partial class Build
             GitHubTasks.GitHubClient = new GitHubClient(
                 new ProductHeaderValue(nameof(NukeBuild)),
                 new InMemoryCredentialStore(credentials));
+
+            NewTag newTag = new()
+            {
+                Tag = OctoVersionInfo.FullSemVer,
+                Object = Repository.Commit,
+                Type = TaggedType.Commit,
+                Tagger = new Committer("Kim Ipsen", "kim.ipsen@outlook.dk", DateTimeOffset.UtcNow)
+            };
+            await GitHubTasks.GitHubClient.Git.Tag.Create("Kim Ipsen", OctoVersionInfo.FullSemVer, newTag);
 
             NewRelease newRelease = new(OctoVersionInfo.FullSemVer);
 
