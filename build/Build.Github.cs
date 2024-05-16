@@ -1,11 +1,7 @@
-﻿using System;
-
-using Nuke.Common;
+﻿using Nuke.Common;
 using Nuke.Common.CI.GitHubActions;
 using Nuke.Common.Git;
-using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.GitHub;
-using Nuke.Common.Tools.NuGet;
 using Nuke.Common.Tools.OctoVersion;
 
 using Octokit;
@@ -32,16 +28,16 @@ public partial class Build
     Target Release => _ => _
         .Requires(() => Repository.IsOnMainOrMasterBranch())
         .DependsOn(Test, MutationTests)
-        .Executes(() =>
+        .Executes(async () =>
         {
             var credentials = new Credentials(GitHubActions.Token);
             GitHubTasks.GitHubClient = new GitHubClient(
                 new ProductHeaderValue(nameof(NukeBuild)),
                 new InMemoryCredentialStore(credentials));
 
-            NewRelease release = new(OctoVersionInfo.FullSemVer);
+            NewRelease newRelease = new(OctoVersionInfo.FullSemVer);
 
-            GitHubTasks.GitHubClient.Repository.Release.Create(GitHubUser, GitHubToken, release);
+            await GitHubTasks.GitHubClient.Repository.Release.Create(GitHubUser, GitHubToken, newRelease);
         });
 
     // https://blog.raulnq.com/github-packages-publishing-nuget-packages-using-nuke-with-gitversion-and-github-actions#heading-create-a-github-action-workflow
