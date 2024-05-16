@@ -42,7 +42,7 @@ partial class Build : NukeBuild
         {
             // do some restores on nuget etc
             DotNetTasks.DotNetRestore(s => s
-                .SetSources("nuget", "nuget.org")
+                // .SetSources("nuget", "nuget.org")
             );
         });
 
