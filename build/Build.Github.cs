@@ -81,6 +81,7 @@ public partial class Build
 
     Target PushGithub => _ => _
         .Triggers(Release)
+        .Requires(() => Configuration.Equals(Configuration.Release))
         .Description($"Publishing to Github for Development only.")
         .OnlyWhenStatic(() => Repository.IsOnDevelopBranch() || GitHubActions.IsPullRequest)
         .Executes(() =>
