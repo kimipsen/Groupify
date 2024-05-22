@@ -16,7 +16,16 @@
 
 name: continuous
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
+      - master
+      - dev
+      - 'releases/**'
+  pull_request:
+    branches:
+      - 'releases/**'
 
 jobs:
   ubuntu-latest:
@@ -33,8 +42,8 @@ jobs:
             .nuke/temp
             ~/.nuget/packages
           key: ${{ runner.os }}-${{ hashFiles('**/global.json', '**/*.csproj', '**/Directory.Packages.props') }}
-      - name: 'Run: Release'
-        run: ./build.cmd Release
+      - name: 'Run: Pack'
+        run: ./build.cmd Pack
         env:
           NugetApiKey: ${{ secrets.NUGET_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

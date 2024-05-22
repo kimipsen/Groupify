@@ -16,7 +16,6 @@ namespace Groupify.Build;
 [GitHubActions(
     "continuous",
     GitHubActionsImage.UbuntuLatest,
-    On = [GitHubActionsTrigger.Push, GitHubActionsTrigger.PullRequest],
     InvokedTargets = [nameof(Pack)],
     EnableGitHubToken = true,
     FetchDepth = 0,
