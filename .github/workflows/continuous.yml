@@ -46,4 +46,5 @@ jobs:
         run: ./build.cmd Pack
         env:
           NugetApiKey: ${{ secrets.NUGET_API_KEY }}
+          MyGetApiKey: ${{ secrets.MY_GET_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -22,16 +22,16 @@ partial class Build : NukeBuild
 
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
     readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
+    [Parameter("Artifacts Type")] readonly string ArtifactsType;
+    [Parameter("Excluded Artifacts Type")] readonly string ExcludedArtifactsType;
+    [Parameter("Nuget Feed Url for Public Access of Releases")] readonly string NugetFeed;
+    [Parameter("Nuget Api Key"), Secret] readonly string NugetApiKey;
+    [Parameter("MyGet Feed Url for Public Access of Pre Releases")] readonly string MyGetNugetFeed;
+    [Parameter("MyGet Api Key"), Secret] readonly string MyGetApiKey;
 
     [GitRepository] readonly GitRepository Repository;
     [Solution(GenerateProjects = true)] readonly Solution Solution;
-
     AbsolutePath PackagesDirectory => RootDirectory / "packages";
-    [Parameter("Artifacts Type")] readonly string ArtifactsType;
-    [Parameter("Excluded Artifacts Type")] readonly string ExcludedArtifactsType;
-
-    [Parameter("Nuget Api Key"), Secret] readonly string NugetApiKey;
-    [Parameter("Nuget Feed Url for Public Access of Pre Releases")] readonly string NugetFeed;
 
     Target Clean => _ => _
         .Executes(() =>
@@ -81,7 +81,7 @@ partial class Build : NukeBuild
         });
 
     Target Pack => _ => _
-        .Triggers(PushGithub, PushNugetOrg)
+        .Triggers(PushGithub, PushNugetOrg, PushMyget)
         .DependsOn(Compile, MutationTests, Test)
         .Executes(() =>
         {
@@ -111,6 +111,25 @@ partial class Build : NukeBuild
                     .SetTargetPath(x)
                     .SetSource(NugetFeed)
                     .SetApiKey(NugetApiKey)
+                    .EnableSkipDuplicate()
+                );
+            });
+        });
+
+    Target PushMyget => _ => _
+        .Description($"Publishing to MyGet for PreRelese only.")
+        .Triggers(Release)
+        .Requires(() => Configuration.Equals(Configuration.Release))
+        .OnlyWhenStatic(() => Repository.IsOnReleaseBranch())
+        .Executes(() =>
+        {
+            PackagesDirectory.GlobFiles(ArtifactsType)
+            .Where(x => !x.Name.EndsWith(ExcludedArtifactsType))
+            .ForEach(x => {
+                DotNetTasks.DotNetNuGetPush(s => s
+                    .SetTargetPath(x)
+                    .SetSource(MyGetNugetFeed)
+                    .SetApiKey(MyGetApiKey)
                     .EnableSkipDuplicate()
                 );
             });

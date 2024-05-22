@@ -10,6 +10,8 @@ using Nuke.Common.Utilities.Collections;
 using Octokit;
 using Octokit.Internal;
 using System.Linq;
+using System.Threading.Tasks;
+using System.IO;
 
 namespace Groupify.Build;
 
@@ -19,11 +21,12 @@ namespace Groupify.Build;
     InvokedTargets = [nameof(Pack)],
     EnableGitHubToken = true,
     FetchDepth = 0,
-    ImportSecrets = [nameof(NugetApiKey)],
+    ImportSecrets = [nameof(NugetApiKey), nameof(MyGetApiKey)],
     OnPushBranches = ["main", "master", "dev", "releases/**"],
     OnPullRequestBranches = ["releases/**"])]
 public partial class Build
 {
+    static readonly string PackageContentType = "application/octet-stream";
     GitHubActions GitHubActions => GitHubActions.Instance;
     [GitVersion]readonly GitVersion GitVersion;
     [Nuke.Common.Parameter] readonly string GitHubUser = GitHubActions.Instance?.RepositoryOwner;
@@ -33,9 +36,9 @@ public partial class Build
          : null;
 
     Target Release => _ => _
-        .Requires(() => Repository.IsOnMainOrMasterBranch())
-        // .DependsOn(Test, MutationTests)
-        .OnlyWhenStatic(() => Repository.IsOnMainOrMasterBranch() || Repository.IsOnDevelopBranch())
+        .Description($"Creating release for the publishable version.")
+        .Requires(() => Configuration.Equals(Configuration.Release))
+        .OnlyWhenStatic(() => Repository.IsOnMainOrMasterBranch() || Repository.IsOnReleaseBranch())
         .Executes(async () =>
         {
             //https://anktsrkr.github.io/post/manage-your-package-release-using-nuke-in-github/
@@ -63,7 +66,9 @@ public partial class Build
                 .Create(owner, name, newRelease)
             ;
 
-            // TODO: upload files
+            PackagesDirectory.GlobFiles(ArtifactsType)
+            .Where(x => !x.Name.EndsWith(ExcludedArtifactsType))
+            .ForEach(async x => await UploadReleaseAssetToGithub(createdRelease, x));
 
             await GitHubTasks
                 .GitHubClient
@@ -91,4 +96,17 @@ public partial class Build
                 );
             });
         });
+
+    private static async Task UploadReleaseAssetToGithub(Release release, string asset)
+    {
+        await using var artifactStream = File.OpenRead(asset);
+        var fileName = Path.GetFileName(asset);
+        var assetUpload = new ReleaseAssetUpload
+        {
+            FileName = fileName,
+            ContentType = PackageContentType,
+            RawData = artifactStream,
+        };
+        await GitHubTasks.GitHubClient.Repository.Release.UploadAsset(release, assetUpload);
+    }
 }

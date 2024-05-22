@@ -22,3 +22,7 @@ tasks:
   targets:
     cmds:
       - dotnet nuke --target
+
+  pipeline:gh:
+    cmds:
+      - dotnet nuke --generate-configuration GitHubActions_continuous --host GitHubActions
