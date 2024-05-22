@@ -28,8 +28,8 @@ partial class Build : NukeBuild
     [Parameter("Nuget Api Key"), Secret] readonly string NugetApiKey;
     [Parameter("MyGet Feed Url for Public Access of Pre Releases")] readonly string MyGetNugetFeed;
     [Parameter("MyGet Api Key"), Secret] readonly string MyGetApiKey;
-    [Parameter("Nuget package description")] readonly string Description;
-    [Parameter("Nuget package copyrigth")] readonly string Copyrigth;
+    [Parameter("Nuget package description")] readonly string NugetDescription;
+    [Parameter("Nuget package copyright")] readonly string Copyright;
 
     [GitRepository] readonly GitRepository Repository;
     [Solution(GenerateProjects = true)] readonly Solution Solution;
@@ -100,8 +100,8 @@ partial class Build : NukeBuild
                 .SetFileVersion(GitVersion.AssemblySemFileVer)
                 .SetPackageId("Groupify.Core")
                 .SetAuthors(GitHubUser)
-                .SetDescription(Description)
-                .SetCopyright(Copyrigth)
+                .SetDescription(NugetDescription)
+                .SetCopyright(Copyright)
             );
         });
 

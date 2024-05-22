@@ -4,5 +4,7 @@
   "ArtifactsType": "*.nupkg",
   "ExcludedArtifactsType": "symbols.nupkg",
   "MyGetNugetFeed": "https://www.myget.org/F/groupify/api/v3/index.json",
-  "NugetFeed": "https://api.nuget.org/v3/index.json"
+  "NugetFeed": "https://api.nuget.org/v3/index.json",
+  "NugetDescription": "",
+  "Copyright": "©Kim Ipsen 2024"
 }
