@@ -6,6 +6,10 @@
     "build": {
       "type": "object",
       "properties": {
+        "ArtifactsType": {
+          "type": "string",
+          "description": "Artifacts Type"
+        },
         "Configuration": {
           "type": "string",
           "description": "Configuration to build - Default is 'Debug' (local) or 'Release' (server)",
@@ -17,6 +21,10 @@
         "Continue": {
           "type": "boolean",
           "description": "Indicates to continue a previously failed build attempt"
+        },
+        "ExcludedArtifactsType": {
+          "type": "string",
+          "description": "Excluded Artifacts Type"
         },
         "GitHubToken": {
           "type": "string",
@@ -56,7 +64,12 @@
         },
         "NugetApiKey": {
           "type": "string",
+          "description": "Nuget Api Key",
           "default": "Secrets must be entered via 'nuke :secrets [profile]'"
+        },
+        "NugetFeed": {
+          "type": "string",
+          "description": "Nuget Feed Url for Public Access of Pre Releases"
         },
         "Partition": {
           "type": "string",
@@ -83,11 +96,11 @@
           "items": {
             "type": "string",
             "enum": [
-              "AddNugetSource",
               "Clean",
               "Compile",
               "MutationTests",
               "Pack",
+              "PushGithub",
               "PushNugetOrg",
               "Release",
               "Restore",
@@ -105,11 +118,11 @@
           "items": {
             "type": "string",
             "enum": [
-              "AddNugetSource",
               "Clean",
               "Compile",
               "MutationTests",
               "Pack",
+              "PushGithub",
               "PushNugetOrg",
               "Release",
               "Restore",

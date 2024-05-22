@@ -1,35 +1,42 @@
-﻿using System;
-
-using Nuke.Common;
+﻿using Nuke.Common;
 using Nuke.Common.CI.GitHubActions;
 using Nuke.Common.Git;
+using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.GitHub;
 using Nuke.Common.Tools.GitVersion;
-using Nuke.Common.Tools.OctoVersion;
+using Nuke.Common.IO;
+using Nuke.Common.Utilities.Collections;
 
 using Octokit;
 using Octokit.Internal;
+using System.Linq;
 
 namespace Groupify.Build;
 
 [GitHubActions(
     "continuous",
     GitHubActionsImage.UbuntuLatest,
-    On = [GitHubActionsTrigger.Push],
-    InvokedTargets = [nameof(Release)],
+    On = [GitHubActionsTrigger.Push, GitHubActionsTrigger.PullRequest],
+    InvokedTargets = [nameof(Pack)],
     EnableGitHubToken = true,
     FetchDepth = 0,
-    ImportSecrets = [nameof(NugetApiKey)])]
+    ImportSecrets = [nameof(NugetApiKey)],
+    OnPushBranches = ["main", "master", "dev", "releases/**"],
+    OnPullRequestBranches = ["releases/**"])]
 public partial class Build
 {
     GitHubActions GitHubActions => GitHubActions.Instance;
     [GitVersion]readonly GitVersion GitVersion;
     [Nuke.Common.Parameter] readonly string GitHubUser = GitHubActions.Instance?.RepositoryOwner;
-    [Nuke.Common.Parameter, Secret] readonly string GitHubToken;
+
+    string GithubNugetFeed => GitHubActions != null 
+         ? $"https://nuget.pkg.github.com/{GitHubActions.RepositoryOwner}/index.json"
+         : null;
 
     Target Release => _ => _
         .Requires(() => Repository.IsOnMainOrMasterBranch())
         // .DependsOn(Test, MutationTests)
+        .OnlyWhenStatic(() => Repository.IsOnMainOrMasterBranch() || Repository.IsOnDevelopBranch())
         .Executes(async () =>
         {
             //https://anktsrkr.github.io/post/manage-your-package-release-using-nuke-in-github/
@@ -67,35 +74,22 @@ public partial class Build
         });
 
     // https://blog.raulnq.com/github-packages-publishing-nuget-packages-using-nuke-with-gitversion-and-github-actions#heading-create-a-github-action-workflow
-    // Target AddGithubSource => _ => _
-    //     .Requires(() => GitHubUser)
-    //     .Requires(() => GitHubToken)
-    //     .Executes(() =>
-    //     {
-    //         try
-    //         {
-    //             DotNetTasks.DotNetNuGetAddSource(s => s
-    //                 .SetName("github")
-    //                 .SetUsername(GitHubUser)
-    //                 .SetPassword(GitHubToken)
-    //                 .EnableStorePasswordInClearText()
-    //                 .SetSource($"https://nuget.pkg.github.com/{GitHubUser}/index.json")
-    //             );
-    //         }
-    //         catch
-    //         {
-    //             Console.WriteLine("Source (github) already exists");
-    //         }
-    //     });
 
-    // Target PushGithub => _ => _
-    //     .DependsOn(Pack, AddGithubSource)
-    //     .Executes(() =>
-    //     {
-    //         DotNetTasks.DotNetNuGetPush(s => s
-    //             .SetTargetPath(PackagesDirectory / "*.nupkg")
-    //             .SetApiKey(GitHubToken)
-    //             .SetSource("github")
-    //         );
-    //     });
+    Target PushGithub => _ => _
+        .Triggers(Release)
+        .Description($"Publishing to Github for Development only.")
+        .OnlyWhenStatic(() => Repository.IsOnDevelopBranch() || GitHubActions.IsPullRequest)
+        .Executes(() =>
+        {
+            PackagesDirectory.GlobFiles(ArtifactsType)
+            .Where(x => !x.Name.EndsWith(ExcludedArtifactsType))
+            .ForEach(x => {
+                DotNetTasks.DotNetNuGetPush(s => s
+                    .SetTargetPath(x)
+                    .SetSource(GithubNugetFeed)
+                    .SetApiKey(GitHubActions.Token)
+                    .EnableSkipDuplicate()
+                );
+            });
+        });
 }
