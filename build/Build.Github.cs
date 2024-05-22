@@ -43,11 +43,11 @@ public partial class Build
                 Type = TaggedType.Commit,
                 Tagger = new Committer("Kim Ipsen", "kim.ipsen@outlook.dk", DateTimeOffset.UtcNow)
             };
-            await GitHubTasks.GitHubClient.Git.Tag.Create("Kim Ipsen", OctoVersionInfo.FullSemVer, newTag);
+            // await GitHubTasks.GitHubClient.Git.Tag.Create("Kim Ipsen", OctoVersionInfo.FullSemVer, newTag);
 
-            NewRelease newRelease = new(OctoVersionInfo.FullSemVer);
+            // NewRelease newRelease = new(OctoVersionInfo.FullSemVer);
 
-            await GitHubTasks.GitHubClient.Repository.Release.Create(GitHubUser, GitHubToken, newRelease);
+            // await GitHubTasks.GitHubClient.Repository.Release.Create(GitHubUser, GitHubToken, newRelease);
         });
 
     // https://blog.raulnq.com/github-packages-publishing-nuget-packages-using-nuke-with-gitversion-and-github-actions#heading-create-a-github-action-workflow
