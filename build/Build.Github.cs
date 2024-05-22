@@ -43,7 +43,7 @@ public partial class Build
                 Type = TaggedType.Commit,
                 Tagger = new Committer("Kim Ipsen", "kim.ipsen@outlook.dk", DateTimeOffset.UtcNow)
             };
-            // await GitHubTasks.GitHubClient.Git.Tag.Create("Kim Ipsen", OctoVersionInfo.FullSemVer, newTag);
+            await GitHubTasks.GitHubClient.Git.Tag.Create("Kim Ipsen", OctoVersionInfo.FullSemVer, newTag);
 
             // NewRelease newRelease = new(OctoVersionInfo.FullSemVer);
 
