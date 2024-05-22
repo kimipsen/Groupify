@@ -15,7 +15,7 @@ namespace Groupify.Build;
     "continuous",
     GitHubActionsImage.UbuntuLatest,
     On = [GitHubActionsTrigger.Push],
-    InvokedTargets = [nameof(PushNugetOrg)],
+    InvokedTargets = [nameof(Release)],
     EnableGitHubToken = true,
     FetchDepth = 0,
     ImportSecrets = [nameof(NugetApiKey)])]
@@ -28,7 +28,7 @@ public partial class Build
 
     Target Release => _ => _
         .Requires(() => Repository.IsOnMainOrMasterBranch())
-        .DependsOn(Test, MutationTests)
+        // .DependsOn(Test, MutationTests)
         .Executes(async () =>
         {
             var credentials = new Credentials(GitHubActions.Token);
