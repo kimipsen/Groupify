@@ -1,9 +1,10 @@
 # yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
 language: "en-US"
 early_access: true
+enable_free_tier: true
 reviews:
-  profile: "chill"
-  request_changes_workflow: false
+  profile: "assertive"
+  request_changes_workflow: true
   high_level_summary: true
   poem: true
   review_status: true
@@ -11,5 +12,10 @@ reviews:
   auto_review:
     enabled: true
     drafts: true
+    base_branches:
+      - "dev"
+      - "main"
+      - "feature/.*"
+      - "bugfix/.*"
 chat:
   auto_reply: true
