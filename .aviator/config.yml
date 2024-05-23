@@ -3,3 +3,5 @@ merge_rules:
     trigger: "mergequeue"
   preconditions:
     number_of_approvals: 1
+  base_branches: [main, master, dev]
+  delete_branch: true
