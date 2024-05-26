@@ -11,6 +11,4 @@ internal static class Fakers
     ;
 
     public static Faker<IPerson> People = PersonFaker;
-
-    public record class Person(int Id, string FirstName, string LastName) : IPerson;
 }

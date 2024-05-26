@@ -105,18 +105,18 @@ public class Generator(GroupSettings settings, List<IPerson> people, List<Relati
         {
             foreach (IPerson member2 in group.People.Where(p => p.Id != member1.Id))
             {
-                if (ContainsRelationship(member1, member2, RelationshipType.Match))
-                    score += (int)RelationshipType.Match;
-
-                if (ContainsRelationship(member1, member2, RelationshipType.DoNotMatch))
-                    score += (int)RelationshipType.DoNotMatch;
+                IRelationshipType? relationshipType = null;
+                if ((relationshipType = ContainsRelationship(member1, member2)) != null)
+                {
+                    score += relationshipType.Value;
+                }
             }
         }
 
         return score;
     }
 
-    private bool ContainsRelationship(IPerson p1, IPerson p2, RelationshipType relationshipType) => relationships.Exists(r => r.Person1.Id == p1.Id && r.Person2.Id == p2.Id && r.RelationshipType == relationshipType);
+    private IRelationshipType? ContainsRelationship(IPerson p1, IPerson p2) => relationships.OrderBy(r => r.RelationshipType.Value).FirstOrDefault(r => r.Person1.Id == p1.Id && r.Person2.Id == p2.Id)?.RelationshipType;
 
     private int CalculateGroupScoreIfReplaced(Group group, IPerson personA, IPerson personB)
     {
@@ -145,11 +145,11 @@ public class Generator(GroupSettings settings, List<IPerson> people, List<Relati
 
             foreach (IPerson person in group.People)
             {
-                if (ContainsRelationship(p, person, RelationshipType.Match))
-                    points[i] += (int)RelationshipType.Match;
-
-                if (ContainsRelationship(p, person, RelationshipType.DoNotMatch))
-                    points[i] += (int)RelationshipType.DoNotMatch;
+                IRelationshipType? relationshipType = null;
+                if ((relationshipType = ContainsRelationship(p, person)) != null)
+                {
+                    points[i] += relationshipType.Value;
+                }
             }
         }
 
