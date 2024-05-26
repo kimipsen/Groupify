@@ -1,4 +1,4 @@
-﻿namespace Groupify.Core.Test;
+﻿namespace Groupify.Core;
 
 public class RelationshipType(string name, int value) : IRelationshipType
 {
