@@ -1,3 +1,5 @@
+using System.Linq;
+
 using Nuke.Common;
 using Nuke.Common.Git;
 using Nuke.Common.IO;
@@ -5,8 +7,6 @@ using Nuke.Common.ProjectModel;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.NuGet;
 using Nuke.Common.Utilities.Collections;
-
-using System.Linq;
 
 namespace Groupify.Build;
 
@@ -28,6 +28,8 @@ partial class Build : NukeBuild
     [Parameter("Nuget Api Key"), Secret] readonly string NugetApiKey;
     [Parameter("MyGet Feed Url for Public Access of Pre Releases")] readonly string MyGetNugetFeed;
     [Parameter("MyGet Api Key"), Secret] readonly string MyGetApiKey;
+    [Parameter("Nuget package description")] readonly string NugetDescription;
+    [Parameter("Nuget package copyright")] readonly string Copyright;
 
     [GitRepository] readonly GitRepository Repository;
     [Solution(GenerateProjects = true)] readonly Solution Solution;
@@ -87,13 +89,19 @@ partial class Build : NukeBuild
         {
             // push nuget package to github
             DotNetTasks.DotNetPack(s => s
-                .SetProject(RootDirectory / "Groupify.Core")
+                .SetProject(Solution.Groupify_Core)
+                .SetConfiguration(Configuration)
                 .SetOutputDirectory(PackagesDirectory)
+                .EnableNoBuild()
+                .EnableNoRestore()
                 .SetVersion(GitVersion.NuGetVersionV2)
+                .SetAssemblyVersion(GitVersion.AssemblySemVer)
+                .SetInformationalVersion(GitVersion.InformationalVersion)
+                .SetFileVersion(GitVersion.AssemblySemFileVer)
                 .SetPackageId("Groupify.Core")
                 .SetAuthors(GitHubUser)
-                .SetDescription("")
-                .SetConfiguration(Configuration)
+                .SetDescription(NugetDescription)
+                .SetCopyright(Copyright)
             );
         });
 
@@ -106,7 +114,8 @@ partial class Build : NukeBuild
         {
             PackagesDirectory.GlobFiles(ArtifactsType)
             .Where(x => !x.Name.EndsWith(ExcludedArtifactsType))
-            .ForEach(x => {
+            .ForEach(x =>
+            {
                 DotNetTasks.DotNetNuGetPush(s => s
                     .SetTargetPath(x)
                     .SetSource(NugetFeed)
@@ -125,7 +134,8 @@ partial class Build : NukeBuild
         {
             PackagesDirectory.GlobFiles(ArtifactsType)
             .Where(x => !x.Name.EndsWith(ExcludedArtifactsType))
-            .ForEach(x => {
+            .ForEach(x =>
+            {
                 DotNetTasks.DotNetNuGetPush(s => s
                     .SetTargetPath(x)
                     .SetSource(MyGetNugetFeed)
