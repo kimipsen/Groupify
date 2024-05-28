@@ -15,7 +15,7 @@
       ]
     },
     "octopus.octoversion.tool": {
-      "version": "0.3.343",
+      "version": "0.3.346",
       "commands": [
         "octoversion"
       ]
